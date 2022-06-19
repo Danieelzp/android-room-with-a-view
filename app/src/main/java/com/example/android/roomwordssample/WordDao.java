@@ -18,6 +18,7 @@ package com.example.android.roomwordssample;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
@@ -47,6 +48,9 @@ public interface WordDao {
     // column, you can use @Insert(onConflict = OnConflictStrategy.REPLACE) to update a row.
     @Insert
     void insert(Word word);
+
+    @Delete
+    void deleteWord(Word word);
 
     @Query("DELETE FROM word_table")
     void deleteAll();
