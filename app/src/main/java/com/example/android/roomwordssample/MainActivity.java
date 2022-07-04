@@ -19,6 +19,8 @@ package com.example.android.roomwordssample;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
@@ -29,6 +31,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.List;
@@ -37,6 +42,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public static final int NEW_WORD_ACTIVITY_REQUEST_CODE = 1;
+    public static final int EDIT_WORD_ACTIVITY_REQUEST_CODE = 2;
 
     private WordViewModel mWordViewModel;
 
@@ -86,11 +92,24 @@ public class MainActivity extends AppCompatActivity {
             }
         }).attachToRecyclerView(recyclerView);
 
+        adapter.setOnItemClickListener(new WordListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Word word) {
+                showCustomDialog(word);
+
+                /*Intent intent = new Intent(MainActivity.this, AddWordActivity.class);
+
+                intent.putExtra(AddWordActivity.EXTRA_WORD, word.getWord());
+
+                startActivityForResult(intent, EDIT_WORD_ACTIVITY_REQUEST_CODE);*/
+            }
+        });
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, NewWordActivity.class);
+                Intent intent = new Intent(MainActivity.this,AddWordActivity.class);
                 startActivityForResult(intent, NEW_WORD_ACTIVITY_REQUEST_CODE);
             }
         });
@@ -100,13 +119,56 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-            Word word = new Word(data.getStringExtra(NewWordActivity.EXTRA_REPLY));
+            Word word = new Word(data.getStringExtra(AddWordActivity.EXTRA_WORD));
             mWordViewModel.insert(word);
+
+        } else if(requestCode == EDIT_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
+            String mWord = "PRUEBA";
+            Word word = new Word(mWord);
+            mWordViewModel.update(word);
+            Toast.makeText(getApplicationContext(),"Registro editado",Toast.LENGTH_SHORT).show();
+
         } else {
             Toast.makeText(
                     getApplicationContext(),
                     R.string.empty_not_saved,
                     Toast.LENGTH_LONG).show();
         }
+    }
+
+    void showCustomDialog(Word word){
+        final Dialog dialog = new Dialog(MainActivity.this);
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.custom_dialog);
+
+        final EditText txtword = dialog.findViewById(R.id.txt_word);
+        Button submitButton = dialog.findViewById(R.id.submit_button);
+        Button cancelButton = dialog.findViewById(R.id.cancel_button);
+
+        final String palabra = word.getWord();
+        txtword.setText(palabra);
+
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String word = txtword.getText().toString();
+                Word nWord = new Word(word);
+                Word mWord = new Word(palabra);
+                mWordViewModel.deleteWord(mWord);
+                mWordViewModel.insert(nWord);
+                dialog.dismiss();
+                Toast.makeText(getApplicationContext(),"Registro editado",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 }

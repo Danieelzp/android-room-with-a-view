@@ -20,15 +20,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * Activity for entering a word.
  */
 
-public class NewWordActivity extends AppCompatActivity {
+public class AddWordActivity extends AppCompatActivity {
+    public static final String EXTRA_WORD =
+            "com.example.android.roomwordssample.EXTRA_WORD";
 
     public static final String EXTRA_REPLY = "com.example.android.wordlistsql.REPLY";
 
@@ -41,19 +46,42 @@ public class NewWordActivity extends AppCompatActivity {
         mEditWordView = findViewById(R.id.edit_word);
 
         final Button button = findViewById(R.id.button_save);
+
+        Intent intent = getIntent();
+
+        if(intent.hasExtra(EXTRA_WORD)){
+            mEditWordView.setText(intent.getStringExtra(EXTRA_WORD));
+        }
+
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Intent replyIntent = new Intent();
+                Intent data = new Intent();
                 if (TextUtils.isEmpty(mEditWordView.getText())) {
-                    setResult(RESULT_CANCELED, replyIntent);
+                    setResult(RESULT_CANCELED, data);
                 } else {
                     String word = mEditWordView.getText().toString();
-                    replyIntent.putExtra(EXTRA_REPLY, word);
-                    setResult(RESULT_OK, replyIntent);
+                    data.putExtra(EXTRA_WORD, word);
+                    setResult(RESULT_OK, data);
                 }
                 finish();
             }
         });
+
+    }
+
+    private void saveWord(){
+        String word = mEditWordView.getText().toString();
+
+        if(word.trim().isEmpty()){
+            Toast.makeText(this,"Inserte una palabra", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent data = new Intent();
+        data.putExtra(EXTRA_WORD, word);
+
+        setResult(RESULT_OK, data);
+        finish();
     }
 }
 

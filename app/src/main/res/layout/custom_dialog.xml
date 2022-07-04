@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Editar palabra"
+        android:textSize="20sp"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:imeOptions="actionNext"
+        android:id="@+id/txt_word"/>
+
+    <ImageView
+        android:id="@+id/img_word"
+        android:layout_width="161dp"
+        android:layout_height="126dp" />
+
+    <Button
+        android:id="@+id/img_button"
+        android:layout_width="161dp"
+        android:layout_height="wrap_content"
+        android:text="Subir Imagen"
+        android:textColor="@color/colorPrimaryDark" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/submit_button"
+            android:layout_width="76dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:background="@color/colorPrimary"
+            android:text="Aceptar"
+            android:textColor="@color/colorAccent" />
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="78dp"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:textColor="@color/colorAccent" />
+
+    </LinearLayout>
+
+</LinearLayout>
