@@ -22,9 +22,12 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.squareup.picasso.Picasso;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,6 +37,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -43,8 +47,12 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int NEW_WORD_ACTIVITY_REQUEST_CODE = 1;
     public static final int EDIT_WORD_ACTIVITY_REQUEST_CODE = 2;
+    private static final int PICK_IMAGE_REQUEST = 3;
 
+    private ImageView mImageView;
+    public Uri mImageUri;
     private WordViewModel mWordViewModel;
+    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +61,12 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        dialog = new Dialog(MainActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.custom_dialog);
+
+        mImageView = dialog.findViewById(R.id.img_word);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         final WordListAdapter adapter = new WordListAdapter(this);
@@ -96,14 +110,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(Word word) {
                 showCustomDialog(word);
-
-                /*Intent intent = new Intent(MainActivity.this, AddWordActivity.class);
-
-                intent.putExtra(AddWordActivity.EXTRA_WORD, word.getWord());
-
-                startActivityForResult(intent, EDIT_WORD_ACTIVITY_REQUEST_CODE);*/
             }
         });
+
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -122,13 +131,14 @@ public class MainActivity extends AppCompatActivity {
             Word word = new Word(data.getStringExtra(AddWordActivity.EXTRA_WORD));
             mWordViewModel.insert(word);
 
-        } else if(requestCode == EDIT_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
-            String mWord = "PRUEBA";
-            Word word = new Word(mWord);
-            mWordViewModel.update(word);
-            Toast.makeText(getApplicationContext(),"Registro editado",Toast.LENGTH_SHORT).show();
+        } else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null) {
+            mImageUri = data.getData();
 
-        } else {
+            Picasso.with(this).load(mImageUri).into(mImageView);
+            Toast.makeText(getApplicationContext(),"Imagen cargada",Toast.LENGTH_SHORT).show();
+        }
+        else {
             Toast.makeText(
                     getApplicationContext(),
                     R.string.empty_not_saved,
@@ -137,26 +147,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showCustomDialog(Word word){
-        final Dialog dialog = new Dialog(MainActivity.this);
-
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.custom_dialog);
-
         final EditText txtword = dialog.findViewById(R.id.txt_word);
         Button submitButton = dialog.findViewById(R.id.submit_button);
         Button cancelButton = dialog.findViewById(R.id.cancel_button);
+        Button btnSubirImagen = dialog.findViewById(R.id.img_button);
 
-        final String palabra = word.getWord();
-        txtword.setText(palabra);
+        final int id = word.getId();
+
+        txtword.setText(word.getWord());
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String word = txtword.getText().toString();
-                Word nWord = new Word(word);
-                Word mWord = new Word(palabra);
-                mWordViewModel.deleteWord(mWord);
-                mWordViewModel.insert(nWord);
+                Word mWord = new Word(word);
+                mWord.setId(id);
+                mWordViewModel.update(mWord);
                 dialog.dismiss();
                 Toast.makeText(getApplicationContext(),"Registro editado",Toast.LENGTH_SHORT).show();
             }
@@ -169,6 +175,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnSubirImagen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openFileChooser();
+            }
+        });
+
         dialog.show();
+    }
+
+    private void openFileChooser(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 }

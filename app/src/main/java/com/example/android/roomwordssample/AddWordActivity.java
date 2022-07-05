@@ -47,12 +47,6 @@ public class AddWordActivity extends AppCompatActivity {
 
         final Button button = findViewById(R.id.button_save);
 
-        Intent intent = getIntent();
-
-        if(intent.hasExtra(EXTRA_WORD)){
-            mEditWordView.setText(intent.getStringExtra(EXTRA_WORD));
-        }
-
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent data = new Intent();
@@ -67,21 +61,6 @@ public class AddWordActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    private void saveWord(){
-        String word = mEditWordView.getText().toString();
-
-        if(word.trim().isEmpty()){
-            Toast.makeText(this,"Inserte una palabra", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Intent data = new Intent();
-        data.putExtra(EXTRA_WORD, word);
-
-        setResult(RESULT_OK, data);
-        finish();
     }
 }
 
