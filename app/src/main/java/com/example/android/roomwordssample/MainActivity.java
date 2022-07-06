@@ -40,6 +40,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import android.view.GestureDetector;
 import java.util.List;
 
 
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     public Uri mImageUri;
     private WordViewModel mWordViewModel;
     private Dialog dialog;
+    private String imagenPath=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +136,8 @@ public class MainActivity extends AppCompatActivity {
         } else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
                 && data != null && data.getData() != null) {
             mImageUri = data.getData();
-
+            //Path para guardar la imagen en la db
+            imagenPath = mImageUri.toString();
             Picasso.with(this).load(mImageUri).into(mImageView);
             Toast.makeText(getApplicationContext(),"Imagen cargada",Toast.LENGTH_SHORT).show();
         }
@@ -160,10 +163,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String word = txtword.getText().toString();
-                Word mWord = new Word(word);
-                mWord.setId(id);
-                mWordViewModel.update(mWord);
+                if(imagenPath==null){
+                    Word mWord = new Word(word);
+                    mWord.setId(id);
+                    mWordViewModel.update(mWord);
+                }else{
+                    Word mWord = new Word(word);
+                    mWord.setId(id);
+                    mWord.setPicture(imagenPath);
+                    mWordViewModel.update(mWord);
+                }
                 dialog.dismiss();
+                mImageView.setImageResource(0);
                 Toast.makeText(getApplicationContext(),"Registro editado",Toast.LENGTH_SHORT).show();
             }
         });
@@ -191,4 +202,5 @@ public class MainActivity extends AppCompatActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
+
 }

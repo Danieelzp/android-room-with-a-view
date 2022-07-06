@@ -18,6 +18,7 @@ package com.example.android.roomwordssample;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
 
@@ -38,6 +39,9 @@ public class Word {
     @PrimaryKey (autoGenerate = true)
     private int id;
 
+    @Ignore
+    private String picture;
+
     @NonNull
     @ColumnInfo(name = "word")
     private String mWord;
@@ -57,5 +61,13 @@ public class Word {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 }

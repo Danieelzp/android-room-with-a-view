@@ -38,11 +38,11 @@
 
         <Button
             android:id="@+id/submit_button"
-            android:layout_width="76dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:background="@color/colorPrimary"
-            android:text="Aceptar"
+            android:text="Actualizar"
             android:textColor="@color/colorAccent" />
 
         <Button
